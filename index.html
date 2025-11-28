@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PLANORA – AI Travel Planner</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f8f9fa;
+      scroll-behavior: smooth;
+    }
+
+    /* Navbar */
+    .navbar {
+      background: linear-gradient(90deg, #007bff, #00bcd4);
+    }
+    .navbar-brand {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #fff !important;
+    }
+
+    /* Hero Section */
+    .hero {
+      height: 90vh;
+      background: url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e") center/cover no-repeat;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-align: center;
+      position: relative;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.3));
+    }
+    .hero-content {
+      position: relative;
+      z-index: 1;
+    }
+    .hero h1 {
+      font-size: 3.5rem;
+      font-weight: bold;
+      animation: fadeInDown 1.2s ease;
+    }
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Buttons */
+    .btn-primary {
+      background: linear-gradient(45deg, #007bff, #00bcd4);
+      border: none;
+      transition: all 0.3s;
+    }
+    .btn-primary:hover {
+      background: linear-gradient(45deg, #00bcd4, #007bff);
+      transform: scale(1.05);
+    }
+
+    /* Features */
+    .feature-icon {
+      font-size: 2.5rem;
+      color: #007bff;
+    }
+    #features .bg-white:hover {
+      transform: translateY(-8px);
+      transition: 0.3s;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Footer */
+    .footer {
+      background: #343a40;
+      color: white;
+      padding: 20px 0;
+    }
+    .footer a {
+      color: #00bcd4;
+      text-decoration: none;
+    }
+
+    /* Testimonials */
+    .testimonial {
+      background: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      height: 100%;
+    }
+
+    /* Chatbot */
+    #chatToggle {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      background: linear-gradient(45deg, #007bff, #00bcd4);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+      font-size: 26px;
+      cursor: pointer;
+      transition: 0.3s;
+      z-index: 9999;
+    }
+    #chatToggle:hover { transform: scale(1.1); }
+
+    #chatbox {
+      position: fixed;
+      bottom: 100px;
+      right: 25px;
+      width: 340px;
+      max-height: 480px;
+      background: #ffffff;
+      border-radius: 15px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      animation: slideUp 0.3s ease;
+      z-index: 9998;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(40px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    #chatHeader {
+      background: linear-gradient(45deg, #007bff, #00bcd4);
+      color: white;
+      padding: 10px;
+      text-align: center;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+    }
+
+    #chatlog {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+      font-size: 0.9rem;
+      background: #f7f8fa;
+    }
+
+    .userMsg, .botMsg {
+      display: inline-block;
+      margin: 6px 0;
+      padding: 8px 12px;
+      border-radius: 12px;
+      line-height: 1.3;
+      max-width: 80%;
+      word-wrap: break-word;
+    }
+    .userMsg {
+      background: #d1ecf1;
+      color: #004085;
+      align-self: flex-end;
+      text-align: right;
+      float: right;
+      clear: both;
+    }
+    .botMsg {
+      background: #e9ecef;
+      color: #212529;
+      align-self: flex-start;
+      text-align: left;
+      float: left;
+      clear: both;
+    }
+
+    #chatInputArea {
+      display: flex;
+      border-top: 1px solid #ddd;
+      padding: 8px;
+      background: #fff;
+    }
+    #userInput {
+      flex: 1;
+      border: 1px solid #ccc;
+      border-radius: 20px;
+      padding: 6px 12px;
+      font-size: 0.9rem;
+    }
+    #sendBtn {
+      background: linear-gradient(45deg, #007bff, #00bcd4);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      margin-left: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    /* Astrology modal custom tweaks */
+    .astro-sign {
+      font-weight: 700;
+      color: #007bff;
+    }
+
+    /* Astrology section */
+    #astroSection {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 600ms ease, opacity 400ms ease;
+      opacity: 0;
+      background: linear-gradient(180deg,#fffaf0,#fff6e6);
+      padding: 0 0;
+    }
+    #astroSection.open {
+      max-height: 1200px;
+      opacity: 1;
+      padding: 40px 0;
+    }
+    .astro-card {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+    .lucky-dates { margin-top: 12px; }
+    .sign-emoji { font-size: 2rem; margin-right: 8px; }
+
+    /* --- PLANORA BOOKING & WEATHER STYLES --- */
+
+    /* 1. Glassy Booking Popup */
+    #planoraBookPopup {
+      position: fixed;
+      left: 50%;
+      top: 14%;
+      transform: translateX(-50%) translateY(-8px);
+      width: min(780px, 94%);
+      z-index: 12000;
+      padding: 14px 18px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(255,138,101,0.08), rgba(255,78,163,0.05));
+      border: 1px solid rgba(255,255,255,0.12);
+      backdrop-filter: blur(6px) saturate(120%);
+      box-shadow: 0 18px 60px rgba(10,10,30,0.14);
+      display: none;
+      transition: transform .36s ease, opacity .36s ease;
+      color: #222;
+    }
+    #planoraBookPopup.open { display:block; transform: translateX(-50%) translateY(0); opacity:1; }
+
+    /* 2. Hotels Fullscreen Section */
+    #planoraHotelsSection {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(180deg,#ff8a65,#ff4ea3);
+      z-index: 11900;
+      padding: 28px 18px;
+      overflow:auto;
+      transition: opacity .45s ease;
+    }
+    #planoraHotelsSection.show { display:flex; opacity:1; }
+
+    #planoraHotelsCard {
+      width: min(980px, 96%);
+      border-radius: 14px;
+      padding: 22px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 24px 70px rgba(0,0,0,0.14);
+      color: #fff;
+      backdrop-filter: blur(6px) saturate(120%);
+    }
+    #planoraHotelsCard h3 { margin:0 0 6px 0; font-weight:700; color:#fff; }
+    .planora-input { border-radius:10px; border:none; padding:.6rem .8rem; background: rgba(255,255,255,0.10); color:#fff; }
+    .planora-input::placeholder { color: rgba(255,255,255,0.7); }
+    .planora-label { color: rgba(255,255,255,0.95); font-weight:600; display:block; margin-bottom:.25rem; font-size:.9rem; }
+
+    .planora-cta {
+      background: linear-gradient(90deg,#ff8a65,#ff4ea3);
+      border:none; border-radius:10px; padding:.6rem .9rem; font-weight:700; color:#fff;
+      box-shadow: 0 12px 36px rgba(255,78,163,0.14);
+    }
+    .planora-cta:hover { transform: translateY(-3px); }
+
+    /* 3. Weather Modal Styles */
+    #weatherModal {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 13000;
+      backdrop-filter: blur(4px);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    #weatherModal.active {
+      display: flex;
+      opacity: 1;
+    }
+    
+    .weather-card {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.1));
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 30px;
+      border-radius: 20px;
+      width: 350px;
+      text-align: center;
+      color: white;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+      backdrop-filter: blur(15px);
+      transform: scale(0.8);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
+    }
+    #weatherModal.active .weather-card {
+      transform: scale(1);
+    }
+
+    .weather-icon { font-size: 4rem; margin-bottom: 10px; display: block; filter: drop-shadow(0 0 10px rgba(255,255,255,0.6)); }
+    .weather-temp { font-size: 3.5rem; font-weight: bold; margin: 0; line-height: 1; }
+    .weather-city { font-size: 1.5rem; margin-top: 5px; font-weight: 600; text-transform: capitalize; }
+    .weather-desc { font-size: 1rem; opacity: 0.9; margin-bottom: 20px; text-transform: capitalize; }
+    
+    .weather-details {
+      display: flex; justify-content: space-around;
+      background: rgba(0,0,0,0.2);
+      padding: 10px; border-radius: 12px;
+      margin-top: 15px;
+    }
+    .wd-item span { display: block; font-size: 0.85rem; opacity: 0.8; }
+    .wd-item strong { display: block; font-size: 1.1rem; }
+
+    .close-weather {
+      position: absolute; top: 15px; right: 15px;
+      background: rgba(255,255,255,0.2);
+      border: none; color: white; border-radius: 50%;
+      width: 30px; height: 30px; cursor: pointer;
+      font-size: 16px; line-height: 30px; padding: 0;
+    }
+    .close-weather:hover { background: rgba(255,255,255,0.4); }
+
+    /* Utilities */
+    .planora-fade-out { animation: planoraFadeOut .42s forwards; }
+    .planora-fade-in { animation: planoraFadeIn .42s forwards; }
+    @keyframes planoraFadeOut { to { opacity:0; transform: translateY(8px); pointer-events:none; } }
+    @keyframes planoraFadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
+
+  </style>
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="#">PLANORA</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
+              data-bs-target="#navbarNav" aria-controls="navbarNav" 
+              aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="#features">Features</a></li>
+          <li class="nav-item"><a class="nav-link" href="#howitworks">How it Works</a></li>
+          <li class="nav-item"><a class="nav-link" href="#aiPlanner">Planner</a></li>
+          <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="#reviews">Reviews</a></li>
+          <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+          <li class="nav-item">
+            <button class="btn btn-light ms-3" data-bs-toggle="modal" data-bs-target="#loginModal">
+              Login
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <section class="hero" id="top">
+    <div class="hero-content">
+      <h1>Plan Smarter, Travel Better</h1>
+      <p class="lead">Your AI-powered travel planner – hotels, attractions, and itineraries in one place.</p>
+      <a href="#features" class="btn btn-primary btn-lg mt-3">Explore Features</a>
+    </div>
+  </section>
+
+  <section id="features" class="py-5">
+    <div class="container text-center">
+      <h2 class="mb-4">Features of PLANORA</h2>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="p-4 shadow rounded bg-white">
+            <div class="feature-icon mb-3">🧳</div>
+            <h5>Personalized Itineraries</h5>
+            <p>Get day-wise travel plans tailored to your budget, destination, and preferences.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="p-4 shadow rounded bg-white">
+            <div class="feature-icon mb-3">🏨</div>
+            <h5>Hotel & Transport</h5>
+            <p>Find the best hotels and transport options consolidated in one platform.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="p-4 shadow rounded bg-white">
+            <div class="feature-icon mb-3">🌍</div>
+            <h5>Smart & Responsive</h5>
+            <p>Access from mobile or laptop with a modern and responsive design.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="howitworks" class="py-5 bg-light">
+    <div class="container text-center">
+      <h2 class="mb-5">How PLANORA Works</h2>
+      <div class="row justify-content-center">
+        <div class="col-md-3 mb-4">
+          <div class="p-3 border rounded bg-white shadow-sm h-100">
+            <h4 class="text-primary">1️⃣ Enter Details</h4>
+            <p>Destination, budget, and travel days.</p>
+          </div>
+        </div>
+        <div class="col-md-3 mb-4">
+          <div class="p-3 border rounded bg-white shadow-sm h-100">
+            <h4 class="text-primary">2️⃣ AI Planning</h4>
+            <p>PLANORA’s AI creates your custom itinerary instantly.</p>
+          </div>
+        </div>
+        <div class="col-md-3 mb-4">
+          <div class="p-3 border rounded bg-white shadow-sm h-100">
+            <h4 class="text-primary">3️⃣ Enjoy Trip</h4>
+            <p>Get hotel, transport & attraction info in one click.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="gallery" class="py-5 bg-white">
+    <div class="container text-center">
+      <h2 class="mb-4">Popular Destinations</h2>
+      <div class="row g-3">
+        <div class="col-6 col-md-3"><img src="https://img.freepik.com/premium-photo/girl-hiker-looking-down-mountain-ocean_864559-1400.jpg" class="img-fluid rounded shadow-sm" alt=""></div>
+        <div class="col-6 col-md-3"><img src="https://tse2.mm.bing.net/th/id/OIP.FhcuRzxd9o7CfOo6A7M8BwHaEK?pid=ImgDet&w=474&h=266&rs=1&o=7&rm=3" class="img-fluid rounded shadow-sm" alt=""></div>
+        <div class="col-6 col-md-3"><img src="https://img.freepik.com/free-photo/travel-supplies-world-map_23-2147732539.jpg" class="img-fluid rounded shadow-sm" alt=""></div>
+        <div class="col-6 col-md-3"><img src="https://img.freepik.com/photos-premium/explorant-monde-epingle-rouge-marque-destination-carte-ouverte_505557-44477.jpg" class="img-fluid rounded shadow-sm" alt=""></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="about" class="py-5 bg-light">
+    <div class="container">
+      <h2 class="text-center mb-4">About PLANORA</h2>
+      <p class="text-center">
+        PLANORA is a smart AI Travel Planner that helps users reduce planning time, avoid confusion,
+        and enjoy customized trips. It combines Artificial Intelligence, responsive web design,
+        and database connectivity to provide a seamless travel experience.
+      </p>
+    </div>
+  </section>
+
+  <section id="reviews" class="py-5">
+    <div class="container text-center">
+      <h2 class="mb-4">What Our Users Say</h2>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="testimonial">
+            <p>“PLANORA saved hours of planning for my Goa trip!”</p>
+            <strong>– Riya Sharma</strong>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="testimonial">
+            <p>“Loved the personalized itinerary, so easy to use.”</p>
+            <strong>– Aman Verma</strong>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="testimonial">
+            <p>“Clean design and perfect for quick travel ideas.”</p>
+            <strong>– Neha Patel</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="aiPlanner" class="py-5 border-top">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 style="font-weight: 800; background: -webkit-linear-gradient(45deg, #007bff, #00bcd4); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+          ✨ AI Itinerary Planner
+        </h2>
+        <p class="lead text-muted">Enter your budget and destination, and let us design your perfect trip.</p>
+      </div>
+
+      <div class="row justify-content-center">
+        <div class="col-md-10">
+          <div class="card shadow-lg border-0" style="border-radius: 20px; overflow: hidden;">
+            <div class="card-header text-white p-4" style="background: linear-gradient(90deg, #007bff, #00bcd4);">
+              <h4 class="m-0">Tell us about your trip</h4>
+            </div>
+            <div class="card-body p-4 bg-white">
+              <form id="itineraryForm" onsubmit="return false;">
+                <div class="row g-3">
+                  <div class="col-md-4">
+                    <label class="form-label fw-bold">Destination</label>
+                    <input type="text" id="aiDest" class="form-control form-control-lg" placeholder="e.g. Goa, Jaipur, Dubai" required>
+                  </div>
+                  
+                  <div class="col-md-4">
+                    <label class="form-label fw-bold">Budget (INR)</label>
+                    <div class="input-group">
+                      <span class="input-group-text">₹</span>
+                      <input type="number" id="aiBudget" class="form-control form-control-lg" placeholder="e.g. 15000" min="500" required>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4">
+                    <label class="form-label fw-bold">Duration</label>
+                    <select id="aiDays" class="form-select form-select-lg">
+                      <option value="2">2 Days</option>
+                      <option value="3" selected>3 Days</option>
+                      <option value="5">5 Days</option>
+                      <option value="7">7 Days</option>
+                    </select>
+                  </div>
+
+                  <div class="col-12 mt-4 text-center">
+                    <button onclick="generateItinerary()" class="btn btn-primary btn-lg px-5 rounded-pill shadow">
+                      Generate Itinerary 🚀
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="aiLoading" class="text-center mt-5" style="display:none;">
+        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>
+        <p class="mt-2 text-muted">Analyzing local gems & prices...</p>
+      </div>
+
+      <div id="aiResult" class="mt-5" style="display:none; animation: slideUp 0.5s ease;">
+        </div>
+    </div>
+  </section>
+
+  <section id="astroSection" aria-hidden="true">
+    <div class="astro-card">
+      <div class="text-center">
+        <div id="astroHeader" style="font-size:1.2rem; margin-bottom:8px;">
+          <span id="astroEmoji" class="sign-emoji">🔮</span>
+          <strong id="astroHeaderText">Your Travel Astrology</strong>
+        </div>
+        <p id="astroIntro" style="margin-bottom:18px;">Pick a preferred travel date below and get a detailed astrology-style travel prediction.</p>
+      </div>
+
+      <div class="row gx-4">
+        <div class="col-md-6">
+          <label class="form-label">Preferred Travel Date</label>
+          <input id="travelDate" type="date" class="form-control" />
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Travel Type (optional)</label>
+          <select id="travelType" class="form-select">
+            <option value="leisure">Leisure / Vacation</option>
+            <option value="romance">Romantic</option>
+            <option value="adventure">Adventure</option>
+            <option value="work">Work / Business</option>
+            <option value="spiritual">Spiritual / Retreat</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="text-center mt-3">
+        <button class="btn btn-primary" onclick="generatePrediction()">Check Prediction</button>
+      </div>
+
+      <div id="astroResult" class="mt-4" style="display:none;">
+        <div id="astroResultCard" class="p-3" style="border-radius:10px;background:#fff;">
+          <h5 id="astroResultTitle"></h5>
+          <p id="astroResultText"></p>
+          <div id="astroLuckyDates" class="lucky-dates"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="py-5 bg-light">
+    <div class="container">
+      <h2 class="text-center mb-4">Contact Us</h2>
+      <form class="col-md-8 mx-auto">
+        <div class="mb-3"><input type="text" class="form-control" placeholder="Your Name" required /></div>
+        <div class="mb-3"><input type="email" class="form-control" placeholder="Your Email" required /></div>
+        <div class="mb-3"><textarea class="form-control" rows="4" placeholder="Your Message"></textarea></div>
+        <button type="submit" class="btn btn-primary w-100">Send Message</button>
+      </form>
+    </div>
+  </section>
+
+  <footer class="footer text-center">
+    <div class="container">
+      <p>© 2025 PLANORA – AI Travel Planner | Designed with ❤ by Team PLANORA</p>
+      <p><a href="#top">Back to Top ↑</a></p>
+    </div>
+  </footer>
+
+  <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Welcome to PLANORA</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="loginForm">
+            <div class="mb-3"><input type="text" id="userName" class="form-control" placeholder="Your Name" required /></div>
+            <div class="mb-3">
+              <label class="form-label">Date of Birth</label>
+              <input type="date" id="dob" class="form-control" required />
+            </div>
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary">Login</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="astroModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content text-center p-4">
+        <div style="font-size:1.1rem; margin-bottom:10px;">
+          <span id="modalEmoji" style="font-size:2rem; margin-right:8px;">✨</span>
+          <span id="modalSign" class="astro-sign">Your Sign</span>
+        </div>
+        <div id="modalMessage" style="margin-bottom:14px;">Astrology-style travel insight will appear here.</div>
+        <div>
+          <button id="modalGotBtn" class="btn btn-primary">Got it!</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button id="chatToggle">💬</button>
+  <div id="chatbox" aria-hidden="true">
+    <div id="chatHeader">🧭 PLANORA AI Assistant</div>
+    <div id="chatlog"></div>
+    <div id="chatInputArea">
+      <input id="userInput" type="text" placeholder="Ask PLANORA..." />
+      <button id="sendBtn">➤</button>
+    </div>
+  </div>
+
+  <div id="planoraBookPopup" role="dialog" aria-hidden="true" aria-modal="true">
+    <div style="display:flex; gap:12px; align-items:center;">
+      <div style="font-size:1.7rem;">🌅</div>
+      <div style="flex:1">
+        <div style="font-weight:700; font-size:1rem;">Feeling inspired by the stars?</div>
+        <div style="color:#444; margin-top:4px; font-size:.95rem;">PLANORA can help you find the perfect stay for your trip — want to search hotels now?</div>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button id="planoraPopupSkip" class="btn btn-light">Not now</button>
+        <button id="planoraPopupBook" class="btn planora-cta">Book Now</button>
+      </div>
+    </div>
+  </div>
+
+  <section id="planoraHotelsSection" aria-hidden="true">
+    <div id="planoraHotelsCard" role="dialog" aria-modal="true">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <div>
+          <h3>Find your perfect stay</h3>
+          <div style="color:rgba(255,255,255,0.9); font-size:.95rem;">Search hotels, compare prices & book with PLANORA</div>
+        </div>
+        <div>
+          <button id="planoraCloseHotels" class="btn btn-light">Close</button>
+        </div>
+      </div>
+
+      <form id="planoraHotelForm" class="row g-3 mt-2" onsubmit="return false;">
+        <div class="col-12 col-md-5">
+          <label class="planora-label">Destination</label>
+          <input id="planoraDestination" class="planora-input w-100" placeholder="Where to stay? (e.g., Goa, Manali)" />
+        </div>
+
+        <div class="col-6 col-md-3">
+          <label class="planora-label">Check-in</label>
+          <input id="planoraCheckIn" type="date" class="planora-input w-100" />
+        </div>
+
+        <div class="col-6 col-md-4">
+          <label class="planora-label">Check-out</label>
+          <input id="planoraCheckOut" type="date" class="planora-input w-100" />
+        </div>
+
+        <div class="col-12 col-md-4">
+          <label class="planora-label">Rooms & Guests</label>
+          <div style="display:flex; gap:.6rem;">
+            <input id="planoraRooms" type="number" min="1" value="1" class="planora-input w-100" />
+            <input id="planoraGuests" type="number" min="1" value="2" class="planora-input w-100" />
+          </div>
+        </div>
+
+        <div class="col-12 col-md-5">
+          <label class="planora-label">Price range (per night)</label>
+          <div style="padding:.4rem 0;">
+            <input id="planoraPriceRange" type="range" min="500" max="50000" step="500" value="5000" class="w-100" />
+            <div style="color:rgba(255,255,255,0.9); margin-top:.2rem;">Up to ₹ <span id="planoraPriceVal">5000</span> / night</div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-3 d-flex align-items-end">
+          <button id="planoraSearchBtn" type="button" class="planora-cta w-100">Search hotels</button>
+        </div>
+
+        <div class="col-12">
+          <small style="color:rgba(255,255,255,0.9);">Tip: flexible dates often get better prices.</small>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <div id="weatherModal">
+    <div class="weather-card">
+      <button class="close-weather" onclick="closeWeather()">×</button>
+      <div id="wIcon" class="weather-icon">🌤️</div>
+      <div id="wTemp" class="weather-temp">--°</div>
+      <div id="wCity" class="weather-city">City Name</div>
+      <div id="wDesc" class="weather-desc">Condition</div>
+      
+      <div class="weather-details">
+        <div class="wd-item">
+          <span>Humidity</span>
+          <strong id="wHumidity">--%</strong>
+        </div>
+        <div class="wd-item">
+          <span>Wind</span>
+          <strong id="wWind">-- km/h</strong>
+        </div>
+      </div>
+      
+      <button class="btn btn-light mt-4 w-100" style="border-radius: 30px; color: #ff4ea3; font-weight: bold;" onclick="closeWeatherAndAlert()">Awesome, Let's Book!</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // --- 1. Zodiac & Astrology Logic ---
+    const ZODIAC_DATA = [
+      { sign: "Capricorn", from: [12,22], to:[1,19], emoji: "♑️" },
+      { sign: "Aquarius", from: [1,20], to:[2,18], emoji: "♒️" },
+      { sign: "Pisces", from: [2,19], to:[3,20], emoji: "♓️" },
+      { sign: "Aries", from: [3,21], to:[4,19], emoji: "♈️" },
+      { sign: "Taurus", from: [4,20], to:[5,20], emoji: "♉️" },
+      { sign: "Gemini", from: [5,21], to:[6,20], emoji: "♊️" },
+      { sign: "Cancer", from: [6,21], to:[7,22], emoji: "♋️" },
+      { sign: "Leo", from: [7,23], to:[8,22], emoji: "♌️" },
+      { sign: "Virgo", from: [8,23], to:[9,22], emoji: "♍️" },
+      { sign: "Libra", from: [9,23], to:[10,22], emoji: "♎️" },
+      { sign: "Scorpio", from: [10,23], to:[11,21], emoji: "♏️" },
+      { sign: "Sagittarius", from: [11,22], to:[12,21], emoji: "♐️" }
+    ];
+
+    function getZodiacSign(day, month) {
+      const z = ZODIAC_DATA.find(z =>
+        (month === z.from[0] && day >= z.from[1]) || (month === z.to[0] && day <= z.to[1])
+      );
+      return z ? { sign: z.sign, emoji: z.emoji } : { sign: "Unknown", emoji: "✨" };
+    }
+
+    const DETAILED_MSG = {
+      Aries: "Mars energizes your outlook — impulsive, bold journeys will open doors. Favor short, action-packed trips.",
+      Taurus: "Venus soothes your travel energies — seek comfort and slow pleasures. A nature retreat brings replenishment.",
+      Gemini: "Mercury sparks curiosity — short city-hopping or cultural trips will inspire communication.",
+      Cancer: "Moon favors emotional restoration — coastal or family-centered trips will nourish your spirit.",
+      Leo: "Sun highlights joy — luxurious sunny getaways or social travel will uplift your confidence.",
+      Virgo: "Mercury with practical aspects — detailed planning yields peace. Small, well-organized retreats help.",
+      Libra: "Venus and harmony — romantic or art-forward destinations will balance you.",
+      Scorpio: "Pluto invites depth — historical or transformative journeys offer powerful insight.",
+      Sagittarius: "Jupiter blesses expansion — long-distance or learning-focused travel brings luck.",
+      Capricorn: "Saturn supports purposeful travel — business or structured retreats will be productive.",
+      Aquarius: "Uranus nudges toward offbeat choices — eco, tech, or community-focused trips feed curiosity.",
+      Pisces: "Neptune enhances spiritual voyages — beach, retreat, or artistic experiences will renew you.",
+      Unknown: "Follow your feeling — travel with intention and trust the journey."
+    };
+
+    function computeLuckyDates(baseDate) {
+      const dates = [];
+      const b = new Date(baseDate);
+      [0,3,7].forEach(offset => {
+        const d = new Date(b);
+        d.setDate(b.getDate() + offset);
+        dates.push(d.toDateString());
+      });
+      return dates;
+    }
+
+    // Login Form Submit
+    document.getElementById('loginForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      const name = (document.getElementById('userName').value || '').trim();
+      const dob = document.getElementById('dob').value;
+      if (!name || !dob) { alert('Please enter your name and date of birth.'); return; }
+      const d = new Date(dob);
+      const day = d.getDate();
+      const month = d.getMonth() + 1;
+      const { sign, emoji } = getZodiacSign(day, month);
+      const message = DETAILED_MSG[sign] || DETAILED_MSG.Unknown;
+
+      document.getElementById('modalSign').innerText = `${sign}`;
+      document.getElementById('modalEmoji').innerText = emoji;
+      document.getElementById('modalMessage').innerText = `${name}, ${message}`;
+
+      const loginModalEl = document.getElementById('loginModal');
+      const loginModal = bootstrap.Modal.getInstance(loginModalEl) || new bootstrap.Modal(loginModalEl);
+      loginModal.hide();
+
+      const astroModalEl = document.getElementById('astroModal');
+      const astroModal = new bootstrap.Modal(astroModalEl);
+      astroModal.show();
+
+      document.getElementById('astroHeaderText').innerText = `${sign} — Travel Astrology`;
+      document.getElementById('astroEmoji').innerText = emoji;
+      document.getElementById('astroIntro').innerText = `Hello ${name}. Check date-specific travel predictions tuned to ${sign} energy.`;
+      astroModalEl.dataset.sign = sign;
+    });
+
+    // Modal "Got it" -> Slide down Astro Section
+    document.getElementById('modalGotBtn').addEventListener('click', function(){
+      const astroModalEl = document.getElementById('astroModal');
+      const modal = bootstrap.Modal.getInstance(astroModalEl) || new bootstrap.Modal(astroModalEl);
+      modal.hide();
+
+      const sect = document.getElementById('astroSection');
+      sect.classList.add('open');
+      sect.setAttribute('aria-hidden', 'false');
+      setTimeout(()=> {
+        document.getElementById('astroSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 120);
+    });
+
+    // Generate Prediction
+    function generatePrediction(){
+      const dateStr = document.getElementById('travelDate').value;
+      if (!dateStr) { alert('Please select a travel date.'); return; }
+      const travelType = document.getElementById('travelType').value;
+      const base = new Date(dateStr);
+      const astroModalEl = document.getElementById('astroModal');
+      const sign = astroModalEl.dataset.sign || 'Unknown';
+      const baseMsg = DETAILED_MSG[sign] || DETAILED_MSG.Unknown;
+
+      let typeHint = '';
+      switch(travelType) {
+        case 'leisure': typeHint = 'The stars favor relaxation.'; break;
+        case 'romance': typeHint = 'Romantic encounters are highlighted.'; break;
+        case 'adventure': typeHint = 'Expect thrills; stay open to unexpected detours.'; break;
+        case 'work': typeHint = 'Professional opportunities are likely.'; break;
+        case 'spiritual': typeHint = 'Seek quiet places — inner insight is supported.'; break;
+      }
+
+      const detailed = `On ${base.toDateString()}, ${sign} energy reads: ${baseMsg} ${typeHint}`;
+      const lucky = computeLuckyDates(base);
+
+      document.getElementById('astroResultTitle').innerText = `Prediction for ${base.toDateString()}`;
+      document.getElementById('astroResultText').innerText = detailed;
+      const luckyDiv = document.getElementById('astroLuckyDates');
+      luckyDiv.innerHTML = `<strong>Suggested lucky dates:</strong><ul>${lucky.map(d=>`<li>${d}</li>`).join('')}</ul>`;
+      document.getElementById('astroResult').style.display = 'block';
+      document.getElementById('astroResult').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    // --- 2. Chatbot Logic ---
+    const toggleBtn = document.getElementById("chatToggle");
+    const chatbox = document.getElementById("chatbox");
+    const chatlog = document.getElementById("chatlog");
+    const userInput = document.getElementById("userInput");
+    const sendBtn = document.getElementById("sendBtn");
+
+    toggleBtn.addEventListener("click", () => {
+      const currentlyVisible = (chatbox.style.display === "flex");
+      chatbox.style.display = currentlyVisible ? "none" : "flex";
+    });
+
+    sendBtn.addEventListener("click", sendMessage);
+    userInput.addEventListener("keypress", (e) => { if (e.key === "Enter") sendMessage(); });
+
+    async function sendMessage() {
+      const msg = (userInput.value || '').trim();
+      if (!msg) return;
+      chatlog.innerHTML += `<div class="userMsg">${escapeHtml(msg)}</div>`;
+      chatlog.scrollTop = chatlog.scrollHeight;
+      userInput.value = '';
+      // Mock reply
+      setTimeout(()=>{
+         chatlog.innerHTML += `<div class="botMsg">I am a demo AI. I can't browse real data yet, but I think that sounds great! ✈️</div>`;
+         chatlog.scrollTop = chatlog.scrollHeight;
+      }, 600);
+    }
+    function escapeHtml(unsafe) {
+      return String(unsafe).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    // --- 3. Booking Popup + Hotels Logic ---
+    (function(){
+      // Watch for prediction result to show booking popup
+      let popupShownOnce = false;
+      function watchForPrediction(){
+         // If Astro Result block is visible, show popup
+         const res = document.getElementById('astroResult');
+         if(res && res.style.display === 'block' && !popupShownOnce){
+             const dest = document.getElementById('planoraBookPopup').dataset.dest || 'Goa';
+             setTimeout(()=> {
+                const p = document.getElementById('planoraBookPopup');
+                p.classList.add('open');
+                p.setAttribute('aria-hidden','false');
+             }, 800);
+             popupShownOnce = true;
+         }
+      }
+      setInterval(watchForPrediction, 1000);
+
+      // Buttons
+      document.addEventListener('click', function(e){
+        // Close Popup
+        if(e.target.id === 'planoraPopupSkip'){
+           document.getElementById('planoraBookPopup').classList.remove('open');
+        }
+        // Book Now -> Open Hotels Section
+        if(e.target.id === 'planoraPopupBook'){
+           document.getElementById('planoraBookPopup').classList.remove('open');
+           // Fade out background slightly (optional) or just scroll top
+           const hs = document.getElementById('planoraHotelsSection');
+           hs.classList.add('show'); hs.setAttribute('aria-hidden','false');
+           hs.classList.add('planora-fade-in');
+           window.scrollTo({ top:0, behavior:'smooth' });
+        }
+        // Close Hotels
+        if(e.target.id === 'planoraCloseHotels'){
+           const hs = document.getElementById('planoraHotelsSection');
+           hs.classList.remove('show');
+        }
+      });
+
+      // Price slider
+      const priceRangeEl = document.getElementById('planoraPriceRange');
+      if(priceRangeEl){
+         priceRangeEl.addEventListener('input', ()=> {
+            document.getElementById('planoraPriceVal').innerText = priceRangeEl.value;
+         });
+      }
+    })();
+
+    // --- 4. WEATHER POPUP LOGIC (REAL-TIME) ---
+    // Uses Open-Meteo API (Free, No Key required)
+
+    // Helper: Map WMO Weather Codes to Text/Icons
+    function getWeatherDesc(code) {
+      const c = parseInt(code);
+      if (c === 0) return { t: "Clear Sky", i: "☀️" };
+      if (c >= 1 && c <= 3) return { t: "Cloudy/Overcast", i: "☁️" };
+      if (c >= 45 && c <= 48) return { t: "Foggy", i: "🌫️" };
+      if (c >= 51 && c <= 67) return { t: "Rain/Drizzle", i: "🌧️" };
+      if (c >= 71 && c <= 77) return { t: "Snow", i: "❄️" };
+      if (c >= 80 && c <= 82) return { t: "Heavy Rain", i: "⛈️" };
+      if (c >= 95) return { t: "Thunderstorm", i: "⚡" };
+      return { t: "Mild", i: "🌤️" };
+    }
+
+    async function showWeatherPopup() {
+      const destInput = document.getElementById('planoraDestination');
+      let city = (destInput.value || "").trim();
+      if (!city) city = "Goa"; // Default fallback
+
+      // Show modal in 'loading' state
+      const wModal = document.getElementById('weatherModal');
+      wModal.classList.add('active');
+      document.getElementById('wCity').innerText = city;
+      document.getElementById('wDesc').innerText = "Fetching real weather...";
+      document.getElementById('wTemp').innerText = "--";
+      document.getElementById('wIcon').innerText = "⏳";
+      document.getElementById('wHumidity').innerText = "--%";
+      document.getElementById('wWind').innerText = "-- km/h";
+
+      try {
+        // 1. Geocoding: Get Lat/Lon for the city
+        const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1&language=en&format=json`;
+        const geoRes = await fetch(geoUrl);
+        const geoData = await geoRes.json();
+
+        if (!geoData.results || geoData.results.length === 0) {
+          throw new Error("City not found");
+        }
+
+        const { latitude, longitude, name } = geoData.results[0];
+
+        // 2. Weather: Get Current Weather
+        const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m`;
+        const wRes = await fetch(weatherUrl);
+        const wData = await wRes.json();
+
+        // 3. Update UI
+        const current = wData.current;
+        const wInfo = getWeatherDesc(current.weather_code);
+
+        document.getElementById('wCity').innerText = name; // Correct Capitalization from API
+        document.getElementById('wTemp').innerText = Math.round(current.temperature_2m) + "°C";
+        document.getElementById('wDesc').innerText = wInfo.t;
+        document.getElementById('wIcon').innerText = wInfo.i;
+        document.getElementById('wHumidity').innerText = current.relative_humidity_2m + "%";
+        document.getElementById('wWind').innerText = current.wind_speed_10m + " km/h";
+
+      } catch (err) {
+        console.error("Weather fetch error:", err);
+        // Fallback UI in case of API error
+        document.getElementById('wDesc').innerText = "Data Unavailable";
+        document.getElementById('wIcon').innerText = "❓";
+        document.getElementById('wCity').innerText = city + " (Not Found)";
+      }
+    }
+
+    function closeWeather() {
+      document.getElementById('weatherModal').classList.remove('active');
+    }
+
+    // --- UPDATED BOOKING BUTTON LOGIC ---
+    // When "Awesome, Let's Book" is clicked, this function:
+    // 1. Closes the popup.
+    // 2. Scrolls to the AI Itinerary Planner.
+    // 3. Pre-fills the destination.
+    // 4. Focuses the Budget input.
+    function closeWeatherAndAlert() {
+      closeWeather();
+      
+      const plannerSection = document.getElementById('aiPlanner');
+      if(plannerSection) {
+         // Pre-fill the destination based on what they searched in Weather popup
+         const currentCity = document.getElementById('wCity').innerText;
+         const destInput = document.getElementById('aiDest');
+         const budgetInput = document.getElementById('aiBudget');
+
+         // Only fill if it looks like a valid city name
+         if(destInput && currentCity && !currentCity.includes('Not Found') && !currentCity.includes('Data')) {
+             destInput.value = currentCity;
+         }
+         
+         // Smooth Scroll to the section
+         setTimeout(() => {
+             plannerSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+             // Focus on budget input so user knows what to do next
+             if(budgetInput) budgetInput.focus();
+         }, 300);
+      }
+    }
+
+    // Attach to Search Button
+    document.addEventListener('DOMContentLoaded', () => {
+      const searchBtn = document.getElementById('planoraSearchBtn');
+      if(searchBtn) {
+        searchBtn.addEventListener('click', () => {
+          const dest = document.getElementById('planoraDestination').value;
+          if(!dest) {
+            alert("Please enter a destination to see availability & weather!");
+            return;
+          }
+          showWeatherPopup();
+        });
+      }
+    });
+
+    // Smooth Scroll links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor=>{
+      anchor.addEventListener('click',function(e){
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) target.scrollIntoView({behavior:'smooth'});
+      });
+    });
+
+    // --- 5. AI ITINERARY GENERATOR LOGIC (ENHANCED) ---
+
+    // Enhanced Database with Detailed "Long Statements"
+    const RICH_CITY_DATA = {
+      goa: {
+        places: ['Baga Beach', 'Fort Aguada', 'Dudhsagar Falls', 'Basilica of Bom Jesus', 'Anjuna Flea Market'],
+        overview: "Goa is a kaleidoscope of Indian and Portuguese cultures, sweetened with sun, sea, sand, seafood, and susegad. It is India's pocket-sized paradise, celebrated for its colonial architecture and stunning coastline.",
+        history: "A former Portuguese province, the overseas territory of Portuguese India existed for about 450 years until it was annexed by India in 1961. The Basilica of Bom Jesus, a UNESCO World Heritage Site, holds the mortal remains of St. Francis Xavier and is a prime example of Baroque architecture.",
+        food: "Goan cuisine consists of regional foods popular in Goa, characterized by the intense use of coconut, fish, and pork. You must try the Pork Vindaloo, a spicy dish influenced by Portuguese vinegar-marinated meat, and the classic Goan Fish Curry served with steaming rice.",
+        cafes: "The cafe culture in Goa is vibrant. Check out 'Artjuna' in Anjuna for its Mediterranean vibe, or 'Eva Cafe' for a cliffside sunset view. In Panjim, 'Cafe Bodega' offers art and great coffee in a restored Portuguese mansion.",
+        hotels_high: "The Leela Goa (Mobor), Taj Exotica (Benaulim), or W Goa (Vagator) for ultimate luxury.",
+        hotels_med: "Santana Beach Resort (Candolim) or Lemon Tree Amarante.",
+        hotels_low: "Zostel Goa, various beach shacks, or guest houses in Calangute."
+      },
+      manali: {
+        places: ['Solang Valley', 'Rohtang Pass', 'Hadimba Temple', 'Old Manali', 'Jogini Waterfalls'],
+        overview: "A high-altitude Himalayan resort town in India’s northern Himachal Pradesh state. It has a reputation as a backpacking center and honeymoon destination.",
+        history: "The Hadimba Devi Temple, built in 1553, is an ancient cave temple dedicated to Hidimbi Devi, wife of Bhima. The structure is built over a huge rock that juts out of the ground and worshiped as an image of the deity.",
+        food: "Manali offers a mix of Himachali and Tibetan cuisine. Do not miss 'Siddu', a local steamed bun stuffed with poppy seeds or walnuts. 'Trout Fish', fresh from the river, is a must-have delicacy here.",
+        cafes: "Old Manali is the hub for cafes. 'Cafe 1947' is iconic, situated right by the river. 'Drifters' Cafe' offers great board games and food.",
+        hotels_high: "The Span Resort & Spa or The Himalayan.",
+        hotels_med: "Snow Valley Resorts or The Orchard Greens.",
+        hotels_low: "Zostel Manali or various backpacker hostels in Old Manali."
+      },
+      jaipur: {
+        places: ['Hawa Mahal', 'Amber Fort', 'City Palace', 'Jantar Mantar', 'Nahargarh Fort'],
+        overview: "Jaipur is the capital of India’s Rajasthan state. It evokes the royal family that once ruled the region and that, in 1727, founded what is now called the Old City, or 'Pink City' for its trademark building color.",
+        history: "Founded in 1727 by Jai Singh II, the Raja of Amer, Jaipur is known for its grid system planning. The Amber Fort, located high on a hill, is the principal tourist attraction.",
+        food: "Jaipur is a food lover's paradise. 'Dal Baati Churma' is the signature dish of Rajasthan. Also try 'Laal Maas' (spicy mutton curry) and 'Ghevar' (a sweet disc-shaped cake).",
+        cafes: "Step into 'Tapri Central' for a modern take on tea and snacks with a view of Central Park. 'Caffe Palladio' offers stunning Italian aesthetics.",
+        hotels_high: "Rambagh Palace (Taj) or The Oberoi Rajvilas.",
+        hotels_med: "Shahpura House or Umaid Bhawan.",
+        hotels_low: "Zostel Jaipur or various heritage havelis converted to budget stays."
+      },
+      delhi: {
+        places: ['India Gate', 'Red Fort', 'Qutub Minar', 'Lotus Temple', 'Chandni Chowk'],
+        overview: "Delhi, India’s capital territory, is a massive metropolitan area in the country’s north. In Old Delhi, a neighborhood dating to the 1600s, stands the imposing Mughal-era Red Fort.",
+        history: "Delhi has been a capital for various kingdoms and empires. The Qutub Minar complex, a UNESCO World Heritage Site, dates back to the 12th century.",
+        food: "Delhi is the street food capital. From the spicy 'Chole Bhature' to the tangy 'Chaat' of Chandni Chowk, and the buttery 'Butter Chicken' created at Moti Mahal.",
+        cafes: "Hauz Khas Village and Khan Market are filled with upscale cafes. 'Diggin' is famous for its romantic ambiance.",
+        hotels_high: "The Imperial or The Leela Palace.",
+        hotels_med: "Bloomrooms or The Prime Balaji.",
+        hotels_low: "Paharganj guest houses or hostels in South Delhi."
+      },
+      kerala: {
+        places: ['Alleppey Backwaters', 'Munnar Tea Gardens', 'Varkala Beach', 'Athirappilly Falls', 'Periyar National Park'],
+        overview: "Kerala, a state on India's tropical Malabar Coast, has nearly 600km of Arabian Sea shoreline. It's known for its palm-lined beaches and backwaters, a network of canals.",
+        history: "Often called the Spice Garden of India, Kerala has been a major spice exporter since 3000 BCE. The Jewish Synagogue in Kochi is the oldest active synagogue in the Commonwealth of Nations.",
+        food: "Kerala cuisine is rich in coconut, rice, and spices. 'Appam with Stew' is a breakfast staple. 'Karimeen Pollichathu' (Pearl Spot fish marinated and grilled in banana leaf) is legendary.",
+        cafes: "Kochi's Fort area has art cafes like 'Kashi Art Cafe'. In Varkala, the cliff-top cafes like 'Darjeeling Cafe' offer unbeatable ocean views.",
+        hotels_high: "Kumarakom Lake Resort or Spice Village Thekkady.",
+        hotels_med: "Deshadan Backwater Resort or Munnar Tea Country Resort.",
+        hotels_low: "Homestays in Alleppey or hostels in Varkala."
+      },
+      udaipur: {
+        places: ['City Palace', 'Lake Pichola', 'Jag Mandir', 'Saheliyon Ki Bari', 'Fateh Sagar Lake'],
+        overview: "Udaipur, formerly the capital of the Mewar Kingdom, is a city in the western Indian state of Rajasthan. Founded by Maharana Udai Singh II in 1559, it’s set around a series of artificial lakes and is known for its lavish royal residences.",
+        history: "The massive City Palace, overlooking Lake Pichola, is a monumental complex of 11 palaces, courtyards and gardens, famed for its intricate peacock mosaics.",
+        food: "Similar to Jaipur but with local twists. 'Kachori' is a popular breakfast. Dining by the lake offers magnificent views.",
+        cafes: "Jheel's Ginger Coffee Bar & Bakery offers sitting right by the water. Grasswood Cafe is great for healthy food.",
+        hotels_high: "The Oberoi Udaivilas or Taj Lake Palace.",
+        hotels_med: "Jagat Niwas Palace or Amet Haveli.",
+        hotels_low: "Bunkyard Hostel or budget guesthouses near Lal Ghat."
+      }
+    };
+
+    function generateItinerary() {
+      // 1. Get Inputs
+      const destInput = document.getElementById('aiDest').value.toLowerCase().trim();
+      const budgetInput = document.getElementById('aiBudget').value;
+      const days = parseInt(document.getElementById('aiDays').value);
+
+      if (!destInput) {
+        alert("Please enter a destination!");
+        return;
+      }
+      if (!budgetInput) {
+        alert("Please enter your budget in INR!");
+        return;
+      }
+
+      // Convert input to integer
+      const budgetVal = parseInt(budgetInput);
+
+      // 2. UI Handling (Loading)
+      document.getElementById('aiLoading').style.display = 'block';
+      document.getElementById('aiResult').style.display = 'none';
+
+      // 3. Simulate AI Delay
+      setTimeout(() => {
+        document.getElementById('aiLoading').style.display = 'none';
+        
+        // 4. Data Retrieval or Fallback Generation
+        let cityData = RICH_CITY_DATA[destInput];
+        
+        // If city not in DB, generate generic content
+        if (!cityData) {
+          const capDest = destInput.charAt(0).toUpperCase() + destInput.slice(1);
+          cityData = {
+            places: [`Central Square of ${capDest}`, `National Museum of ${capDest}`, 'Popular City Park', 'Historic Old Town', 'Local Market'],
+            overview: `${capDest} is a vibrant destination known for its unique blend of culture and modernity. It attracts travelers looking for authentic experiences.`,
+            history: `The history of ${capDest} is rich and varied, with landmarks that tell the stories of its past. Historic districts offer a glimpse into the architectural heritage.`,
+            food: `The local cuisine of ${capDest} is a must-try. Expect bold flavors and fresh ingredients. Street food stalls offer authentic local snacks.`,
+            cafes: `The city has a growing cafe culture with cozy spots perfect for relaxation.`,
+            hotels_high: `Luxury 5-star hotels in the city center.`,
+            hotels_med: `Comfortable boutique hotels and guesthouses.`,
+            hotels_low: `Budget hostels and affordable lodges.`
+          };
+        }
+
+        // 5. Budget Logic (Updated for INR)
+        let stayRec, transportType, diningStyle, budgetLevel;
+        
+        if (budgetVal < 10000) {
+          budgetLevel = "Backpacker (Low)";
+          stayRec = cityData.hotels_low;
+          transportType = "Public Buses, Metro, or Walking";
+          diningStyle = "Street Food Stalls & Affordable Dhabas";
+        } else if (budgetVal >= 10000 && budgetVal < 50000) {
+          budgetLevel = "Comfort (Medium)";
+          stayRec = cityData.hotels_med;
+          transportType = "Rental Scooters, Uber, or Rickshaws";
+          diningStyle = "Nice Cafes & Mid-range Family Restaurants";
+        } else {
+          budgetLevel = "Luxury (High)";
+          stayRec = cityData.hotels_high;
+          transportType = "Private Chauffeur-driven Car";
+          diningStyle = "Fine Dining & Roof-top Lounges";
+        }
+
+        // 6. Build HTML
+        let htmlContent = `
+          <div class="row mb-4">
+            <div class="col-md-12">
+              <div class="alert alert-info border-0 shadow-sm">
+                <h4 class="alert-heading">Trip to ${destInput.charAt(0).toUpperCase() + destInput.slice(1)} (${days} Days)</h4>
+                <p class="mb-0"><strong>Budget:</strong> ₹${budgetVal} (${budgetLevel})</p>
+                <hr>
+                <div class="d-flex flex-wrap gap-3 text-sm">
+                  <span>🚗 <strong>Travel:</strong> ${transportType}</span>
+                  <span>🍽️ <strong>Eat:</strong> ${diningStyle}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="row mb-4">
+             <div class="col-12">
+               <div class="card border-0 shadow-sm h-100">
+                 <div class="card-body">
+                   <h5 class="text-primary fw-bold">🌍 About the Destination</h5>
+                   <p>${cityData.overview}</p>
+                   <h5 class="text-primary fw-bold mt-3">🏛️ History & Heritage</h5>
+                   <p>${cityData.history}</p>
+                 </div>
+               </div>
+             </div>
+          </div>
+
+          <h4 class="mb-3">📅 Day-by-Day Plan</h4>
+          <div class="row">
+        `;
+
+        // Generate Cards for each Day
+        for (let i = 1; i <= days; i++) {
+          const place1 = cityData.places[(i * 2 - 2) % cityData.places.length];
+          const place2 = cityData.places[(i * 2 - 1) % cityData.places.length];
+          
+          htmlContent += `
+            <div class="col-md-6 mb-4">
+              <div class="card h-100 border-0 shadow-sm">
+                <div class="card-header bg-white fw-bold text-primary">Day ${i}: Exploration</div>
+                <div class="card-body">
+                  <ul class="list-unstyled">
+                    <li class="mb-2">🌞 <strong>Morning:</strong> Start your day at <strong>${place1}</strong>. Enjoy the morning vibes and take photos.</li>
+                    <li class="mb-2">🍲 <strong>Lunch:</strong> Have a hearty meal at a nearby spot suited to your ${budgetLevel} budget.</li>
+                    <li class="mb-2">🌥️ <strong>Afternoon:</strong> Visit <strong>${place2}</strong>.</li>
+                    <li class="mb-0">🌙 <strong>Evening:</strong> Relax at a local cafe or explore the night market.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+
+        htmlContent += `</div>`; // Close row
+
+        // Add Shopping & Essentials Section with LONG STATEMENTS
+        htmlContent += `
+          <div class="row mt-3 g-3">
+            <div class="col-md-6">
+              <div class="card border-0 shadow bg-white h-100">
+                <div class="card-body">
+                  <h5 class="fw-bold">🍜 Famous Food & Cuisine</h5>
+                  <p>${cityData.food}</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="card border-0 shadow bg-white h-100">
+                <div class="card-body">
+                  <h5 class="fw-bold">☕ Best Cafes & Chill Spots</h5>
+                  <p>${cityData.cafes}</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="card border-0 shadow bg-light">
+                <div class="card-body">
+                  <h5 class="fw-bold">🏨 Recommended Stays (${budgetLevel})</h5>
+                  <p>${stayRec}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+
+        document.getElementById('aiResult').innerHTML = htmlContent;
+        document.getElementById('aiResult').style.display = 'block';
+        
+        // Scroll to results
+        document.getElementById('aiResult').scrollIntoView({ behavior: 'smooth' });
+
+      }, 1500); // 1.5s delay
+    }
+
+  </script>
+</body>
+</html>
